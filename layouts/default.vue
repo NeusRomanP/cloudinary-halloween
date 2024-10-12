@@ -33,6 +33,7 @@ header {
 
 footer {
   position: relative;
+  height: 100px;
 }
 
 main {
