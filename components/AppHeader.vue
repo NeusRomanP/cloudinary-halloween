@@ -40,7 +40,7 @@ h1 {
   justify-content: center;
   width: 80px;
   max-width: 30%;
-  aspect-ratio: 5/4;
+  aspect-ratio: 1;
   border-radius: 50%;
   border: 4px solid black;
   background: orange;
@@ -92,8 +92,8 @@ h1 {
   align-self: center;
   background-color: black;
   clip-path: polygon(
-    10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%, /* Parte superior curva */
-    75% 80%, 50% 70%, 25% 80%, 10% 40% /* Parte inferior con ondulaciones */
+    10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%,
+    75% 80%, 50% 70%, 25% 80%, 10% 40%
   );
 
   animation: pumpkin-mouth 2s infinite;
@@ -102,23 +102,32 @@ h1 {
 @keyframes pumpkin-mouth {
   0% {
     clip-path: polygon(
-      10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%, /* Parte superior curva */
-      75% 80%, 50% 70%, 25% 80%, 10% 40% /* Parte inferior con ondulaciones */
+      10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%,
+      75% 80%, 50% 70%, 25% 80%, 10% 40%
     );
   }
 
   50% {
     clip-path: polygon(
-      10% 80%, 25% 70%, 50% 80%, 75% 70%, 90% 80%,
-      75% 40%, 50% 60%, 25% 40%, 10% 80%
+      10% 80%, 25% 55%, 50% 70%, 75% 55%, 90% 80%,
+      75% 70%, 50% 100%, 25% 70%, 10% 80%
     );
   }
 
   100% {
     clip-path: polygon(
-      10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%, /* Parte superior curva */
-      75% 80%, 50% 70%, 25% 80%, 10% 40% /* Parte inferior con ondulaciones */
+      10% 40%, 25% 60%, 50% 40%, 75% 60%, 90% 40%,
+      75% 80%, 50% 70%, 25% 80%, 10% 40%
     );
+  }
+}
+
+@media only screen and (max-width: 510px){
+  .pumpkin {
+    width: 60px;
+    height: 60px;
+    aspect-ratio: 1;
+    align-self: center;
   }
 }
 </style>
