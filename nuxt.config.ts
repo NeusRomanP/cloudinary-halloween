@@ -3,12 +3,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   modules: ["@nuxtjs/cloudinary"],
+  runtimeConfig: {
+    public: {
+      cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    }
+  },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    uploadPreset: 'my-upload-preset',
-    apiKey: '12345',
-    analytics: true,
-    cloud: {},
-    url: {},
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET,
+    analytics: true
   }
 })

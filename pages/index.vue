@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>holaaa</h1>
+    <h2>Choose how your spookie photo will be</h2>
     <div>
-      <CldUploadWidget v-slot="{ open }"
+      <CldUploadWidget v-slot="{ open }" @success="uploadSuccess"
                        uploadPreset="nuxt-cloudinary-unsigned"
                        :options="{
                         sources: ['local', 'camera'],
@@ -29,5 +29,97 @@
         <button type="button" @click="open">Upload an Image</button>
       </CldUploadWidget>
     </div>
+    <div v-if="imageUrl" class="image-container">
+      <ConverterOptions @transform-photo="(type, target) => transformPhoto(type, target)"/>
+      <h2>Imagen Subida:</h2>
+      <img :src="imageUrl" alt="Imagen subida" id="img"/>
+    </div>
   </div>
 </template>
+<script setup>
+  import { ref } from "vue";
+  import { useRuntimeConfig } from "#app";
+
+  const config = useRuntimeConfig();
+  const cloudName = config.public.cloudinaryCloudName;
+
+  let imageUrl = ref("https://res.cloudinary.com/dhtztzsnk/image/upload/v1728840828/kfvuamjbsfnqdmbw5ge6.jpg");
+  let id = ref("kfvuamjbsfnqdmbw5ge6");
+  let image;
+
+  onMounted(() => {
+    image = document.getElementById('img');
+  });
+
+  function uploadSuccess(result) {
+    console.log(result);
+    imageUrl.value = result.info.secure_url;
+    id.value = result.info.public_id;
+  }
+
+  function transformPhoto(type, target) {
+    image.style.opacity = '.3';
+    // let {url} = useCldImageUrl(
+    //   {
+    //     options: {
+    //       src: id.value,
+    //     },
+    //     transformation: [{
+    //       e_generative_fill: {
+    //         replace: ['cat', 'zombie cat with blood']
+    //       }
+    //     }]
+    //   },
+    // );
+
+    console.log(cloudName)
+    let from = 'main%20character';
+    let to = `${type}`;
+    let background = `e_gen_background_replace:prompt_Add%20${type}`;
+    let filter = "e_tint:equalize:40:red:grey";
+
+    const url = target === 'character'
+      ? `https://res.cloudinary.com/${cloudName}/image/upload/e_gen_replace:from_${from};to_${to}/${filter}/${id.value}`
+      : `https://res.cloudinary.com/${cloudName}/image/upload/${background}/${filter}/${id.value}`;
+    
+    imageUrl.value = url;
+
+    console.log(type, target, url);
+
+    image.onload = () => {
+      image.style.opacity = '1';
+    }
+  }
+  
+</script>
+<style scoped>
+  h2 {
+    color: orange;
+    text-shadow: 0 0 2 white;
+    text-align: center;
+  }
+
+  button {
+    background-color: orange;
+    color: black;
+    border: 2px solid black;
+    border-radius: 8px;
+    box-shadow: 0 0 5px white;
+    padding: 8px 16px;
+    display: flex;
+    margin: auto;
+    cursor: pointer;
+  }
+
+  .image-container {
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+    margin-bottom: 40px;
+  }
+
+  .image-container img {
+    display: inline-block;
+    width: 100%;
+  }
+</style>

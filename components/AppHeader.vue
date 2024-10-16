@@ -8,7 +8,7 @@
       <div class="nose"></div>
       <div class="mouth"></div>
     </div>
-    <h1>Make your photo spooky</h1>
+    <h1>Spookify your photo</h1>
     <div class="pumpkin right">
       <div class="eyes">
         <div class="left eye"></div>
@@ -122,7 +122,7 @@ h1 {
   }
 }
 
-@media only screen and (max-width: 510px){
+@media only screen and (max-width: 540px){
   .pumpkin {
     width: 60px;
     height: 60px;
