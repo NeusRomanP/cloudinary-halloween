@@ -59,7 +59,7 @@ function changeTarget(e) {
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-    margin-top: 16px;
+    margin-block: 16px;
   }
 
   .radios {

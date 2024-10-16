@@ -31,7 +31,6 @@
     </div>
     <div v-if="imageUrl" class="image-container">
       <ConverterOptions @transform-photo="(type, target) => transformPhoto(type, target)"/>
-      <h2>Imagen Subida:</h2>
       <img :src="imageUrl" alt="Imagen subida" id="img"/>
     </div>
   </div>
@@ -52,39 +51,36 @@
   });
 
   function uploadSuccess(result) {
-    console.log(result);
     imageUrl.value = result.info.secure_url;
     id.value = result.info.public_id;
   }
 
   function transformPhoto(type, target) {
     image.style.opacity = '.3';
-    // let {url} = useCldImageUrl(
-    //   {
-    //     options: {
-    //       src: id.value,
-    //     },
-    //     transformation: [{
-    //       e_generative_fill: {
-    //         replace: ['cat', 'zombie cat with blood']
-    //       }
-    //     }]
-    //   },
-    // );
 
-    console.log(cloudName)
-    let from = 'main%20character';
-    let to = `${type}`;
-    let background = `e_gen_background_replace:prompt_Add%20${type}`;
-    let filter = "e_tint:equalize:40:red:grey";
+    let options = {};
+    if (target === 'character') {
+      options = {
+        src: id.value,
+        replace: {
+          from: 'Main character',
+          to: type
+        }
+      } 
+    } else {
+      options = {
+        src: id.value,
+        replaceBackground: `Add ${type}s to the background`
+      }
+    }
 
-    const url = target === 'character'
-      ? `https://res.cloudinary.com/${cloudName}/image/upload/e_gen_replace:from_${from};to_${to}/${filter}/${id.value}`
-      : `https://res.cloudinary.com/${cloudName}/image/upload/${background}/${filter}/${id.value}`;
-    
+    const {url} = useCldImageUrl(
+      {
+        options: options,
+      },
+    );
+
     imageUrl.value = url;
-
-    console.log(type, target, url);
 
     image.onload = () => {
       image.style.opacity = '1';
