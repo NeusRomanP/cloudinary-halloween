@@ -38,7 +38,6 @@ function changeTarget(e) {
   lastChecked.classList.remove('checked');
   e.target.closest('label').classList.add('checked');
   target.value = e.target.value;
-  console.log(target.value)
 }
 
 </script>
