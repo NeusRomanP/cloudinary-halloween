@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <h2>Choose how your spookie photo will be</h2>
+  <div class="relative">
+    <button class="open-modal__button" @click="openModal">
+      Uploaded images
+    </button>
+    <h2>Choose an image to spookify</h2>
     <div>
       <CldUploadWidget v-slot="{ open }" @success="uploadSuccess"
                        uploadPreset="nuxt-cloudinary-unsigned"
@@ -34,10 +37,12 @@
       <img :src="imageUrl" alt="Imagen subida" id="img"/>
     </div>
   </div>
+  <UploadedImages @setImage="setImage" />
 </template>
 <script setup>
   import { ref } from "vue";
   import { useRuntimeConfig } from "#app";
+  import nuxtStorage from 'nuxt-storage';
 
   const config = useRuntimeConfig();
   const cloudName = config.public.cloudinaryCloudName;
@@ -53,6 +58,18 @@
   function uploadSuccess(result) {
     imageUrl.value = result.info.secure_url;
     id.value = result.info.public_id;
+    let imgs = nuxtStorage.localStorage.getData('images') || [];
+    imgs.push({
+      id: id.value,
+      url: imageUrl.value
+    });
+    nuxtStorage.localStorage.setData('images', imgs, 365 * 5, 'd');
+  }
+
+  function setImage(img) {
+    imageUrl.value = img.url;
+    id.value = img.id;
+    document.querySelector('.modal-container').classList.add('hidden');
   }
 
   function transformPhoto(type, target) {
@@ -86,6 +103,10 @@
       image.style.opacity = '1';
     }
   }
+
+  function openModal() {
+    document.querySelector('.modal-container').classList.remove('hidden');
+  }
   
 </script>
 <style scoped>
@@ -93,6 +114,7 @@
     color: orange;
     text-shadow: 0 0 2 white;
     text-align: center;
+    padding-top: 64px;
   }
 
   button {
@@ -118,4 +140,26 @@
     display: inline-block;
     width: 100%;
   }
+
+  .relative {
+    position: relative;
+  }
+
+  .open-modal__button {
+    position: absolute;
+    top: 0;
+    right: 16px;
+  }
+
+  @media screen and (max-width: 500px) {
+    .open-modal__button {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      right: 50%;
+      transform: translateX(-50%);
+      width: fit-content;
+    }
+  }
+
 </style>

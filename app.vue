@@ -10,6 +10,11 @@
   font-family: october-crow;
   src: url(./assets/fonts/OctoberCrow.ttf);
 }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   padding: 0;
   margin: 0;
