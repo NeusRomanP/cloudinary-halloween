@@ -3,8 +3,7 @@
     <button class="open-modal__button" @click="openModal">
       Uploaded images
     </button>
-    <h2>Choose an image to spookify</h2>
-    <div>
+    <div class="upload-button-container">
       <CldUploadWidget v-slot="{ open }" @success="uploadSuccess"
                        uploadPreset="nuxt-cloudinary-unsigned"
                        :options="{
@@ -29,12 +28,20 @@
                           },
                         }
                        }">
-        <button type="button" @click="open">Upload an Image</button>
+        <button type="button" @click="open">
+          <span>
+            Upload an Image
+          </span>
+        </button>
       </CldUploadWidget>
     </div>
     <div v-if="imageUrl" class="image-container">
       <ConverterOptions @transform-photo="(type, target) => transformPhoto(type, target)"/>
+      <p v-if="loading" class="loading">Loading...</p>
       <img :src="imageUrl" alt="Imagen subida" id="img"/>
+    </div>
+    <div v-else>
+      <p class="no-image">Upload an image to spookify</p>
     </div>
   </div>
   <<ClientOnly >
@@ -50,19 +57,24 @@
   const cloudName = config.public.cloudinaryCloudName;
 
   const myImages = ref([]);
-
-  let imageUrl = ref("https://res.cloudinary.com/dhtztzsnk/image/upload/v1728840828/kfvuamjbsfnqdmbw5ge6.jpg");
-  let id = ref("kfvuamjbsfnqdmbw5ge6");
+  const loading = ref(false);
+// "https://res.cloudinary.com/dhtztzsnk/image/upload/v1728840828/kfvuamjbsfnqdmbw5ge6.jpg"
+// "kfvuamjbsfnqdmbw5ge6"
+  const imageUrl = ref('');
+  const id = ref('');
   let image;
 
   onMounted(() => {
-    image = document.getElementById('img');
     myImages.value = nuxtStorage.localStorage.getData('images') || [];
+    imageUrl.value = myImages.value[0]?.url ?? '';
+    id.value = myImages.value[0]?.id ?? '';
+    image = document.getElementById('img');
   });
 
   function uploadSuccess(result) {
     imageUrl.value = result.info.secure_url;
     id.value = result.info.public_id;
+    image = document.getElementById('img');
     let imgs = nuxtStorage.localStorage.getData('images') || [];
     imgs.unshift({
       id: id.value,
@@ -76,11 +88,16 @@
   function setImage(img) {
     imageUrl.value = img.url;
     id.value = img.id;
+    image = document.getElementById('img');
     document.querySelector('.modal-container').classList.add('hidden');
   }
 
   function transformPhoto(type, target) {
-    image.style.opacity = '.3';
+    image = document.getElementById('img');
+    image.style.opacity = .3;
+    loading.value = true;
+
+    let ok = false;
 
     let options = {};
     if (target === 'character') {
@@ -88,26 +105,37 @@
         src: id.value,
         replace: {
           from: 'Main character',
-          to: type
+          to: `Scary ${type}`
         }
       } 
     } else {
       options = {
         src: id.value,
-        replaceBackground: `Add ${type}s to the background`
+        replaceBackground: `Add scary ${type}s to the background`
       }
     }
-
-    const {url} = useCldImageUrl(
-      {
-        options: options,
-      },
-    );
-
-    imageUrl.value = url;
-
-    image.onload = () => {
-      image.style.opacity = '1';
+    let counter = 0;
+    while (!ok && counter < 5) {
+      try {
+        const {url} = useCldImageUrl(
+          {
+            options: options,
+          },
+        );
+        imageUrl.value = url;
+  
+        image.onload = () => {
+          loading.value = false;
+          image.style.opacity = '1';
+          ok = true;
+        }
+      } catch (error) {
+        loading.value = false;
+        image.style.opacity = '1';
+        ok = false;
+        console.log('error')
+      }
+      counter++;
     }
   }
 
@@ -134,7 +162,20 @@
     color: orange;
     text-shadow: 0 0 2 white;
     text-align: center;
-    padding-top: 64px;
+  }
+
+  .upload-button-container {
+    margin-top: 16px;
+  }
+
+  .upload-button-container button {
+    width: 90%;
+    max-width: 500px;
+    aspect-ratio: 3/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
   }
 
   button {
@@ -166,18 +207,32 @@
   }
 
   .open-modal__button {
-    position: absolute;
-    top: 0;
-    right: 16px;
+    margin: auto;
+    margin-top: 16px;
+  }
+
+  .no-image {
+    color: orange;
+    font-size: 1.2rem;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+    margin-top: 32px
+  }
+
+  .loading {
+    color: orange;
+    font-size: 1.2rem;
+    text-align: center;
   }
 
   @media screen and (max-width: 500px) {
     .open-modal__button {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      right: 50%;
-      transform: translateX(-50%);
+      position: static;
+      display: block;
+      margin: auto;
+      margin-top: 16px;
       width: fit-content;
     }
   }
