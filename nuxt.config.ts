@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: true,
   app: {
     head: {
-      title: 'Spooky Photos'
+      title: 'SpookIA - Spookify Your Photos'
     }
   },
   build: {

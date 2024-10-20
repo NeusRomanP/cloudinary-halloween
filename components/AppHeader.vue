@@ -8,7 +8,10 @@
       <div class="nose"></div>
       <div class="mouth"></div>
     </div>
-    <h1>Spookify your photo</h1>
+    <div>
+      <h1>SpookIA</h1>
+      <h2>Spookify your photos</h2>  
+    </div>
     <div class="pumpkin right">
       <div class="eyes">
         <div class="left eye"></div>
@@ -27,6 +30,14 @@ h1 {
   text-shadow: 0 0 5px white;
 }
 
+h2 {
+  font-family: october-crow, sans-serif;
+  color: orange;
+  font-size: 1.5rem;
+  text-align: center;
+  text-shadow: 0 0 5px white;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -40,6 +51,7 @@ h1 {
   justify-content: center;
   width: 80px;
   max-width: 30%;
+  height: 80px;
   aspect-ratio: 1;
   border-radius: 50%;
   border: 4px solid black;
@@ -47,6 +59,7 @@ h1 {
   filter: drop-shadow(0 0 5px white);
   padding: 0.5%;
   box-sizing: border-box;
+  align-self: center;
 }
 
 .pumpkin.left {
