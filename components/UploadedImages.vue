@@ -158,4 +158,12 @@ function closeModal() {
     border-radius: 10px;
     border: 2px solid black;
   }
+
+  @media screen and (max-width: 430px) {
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+  }
 </style>

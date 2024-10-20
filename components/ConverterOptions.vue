@@ -29,7 +29,7 @@
 
 import { ref } from "vue";
 
-defineEmits(['zombify']);
+defineEmits(['transform-photo']);
 
 const target = ref('character');
 

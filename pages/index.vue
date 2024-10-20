@@ -38,6 +38,7 @@
     <div v-if="imageUrl" class="image-container">
       <ConverterOptions @transform-photo="(type, target) => transformPhoto(type, target)"/>
       <p v-if="loading" class="loading">Loading...</p>
+      <p v-if="imgError" class="img-error">An error ocurred, try again...</p>
       <img :src="imageUrl" alt="Imagen subida" id="img"/>
     </div>
     <div v-else>
@@ -58,8 +59,7 @@
 
   const myImages = ref([]);
   const loading = ref(false);
-// "https://res.cloudinary.com/dhtztzsnk/image/upload/v1728840828/kfvuamjbsfnqdmbw5ge6.jpg"
-// "kfvuamjbsfnqdmbw5ge6"
+  const imgError = ref(false);
   const imageUrl = ref('');
   const id = ref('');
   let image;
@@ -97,6 +97,13 @@
     image.style.opacity = .3;
     loading.value = true;
 
+    if (imgError.value) {
+      loading.value = false;
+      imageUrl.value = '';
+    }
+
+    imgError.value = false;
+
     let ok = false;
 
     let options = {};
@@ -114,28 +121,28 @@
         replaceBackground: `Add scary ${type}s to the background`
       }
     }
-    let counter = 0;
-    while (!ok && counter < 5) {
-      try {
-        const {url} = useCldImageUrl(
-          {
-            options: options,
-          },
-        );
-        imageUrl.value = url;
-  
-        image.onload = () => {
-          loading.value = false;
-          image.style.opacity = '1';
-          ok = true;
-        }
-      } catch (error) {
-        loading.value = false;
-        image.style.opacity = '1';
-        ok = false;
-        console.log('error')
-      }
-      counter++;
+
+    const {url} = useCldImageUrl(
+      {
+        options: options,
+      },
+    );
+
+    setTimeout(() => {
+      imageUrl.value = url;
+    }, 100);
+
+    image.onload = () => {
+      loading.value = false;
+      image.style.opacity = '1';
+      ok = true;
+    }
+
+    image.onerror = () => {
+      loading.value = false;
+      image.style.opacity = '1';
+      ok = false;
+      imgError.value = true;
     }
   }
 
@@ -222,6 +229,12 @@
   }
 
   .loading {
+    color: orange;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .img-error {
     color: orange;
     font-size: 1.2rem;
     text-align: center;
