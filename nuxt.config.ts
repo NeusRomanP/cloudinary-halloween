@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: true,
+  app: {
+    head: {
+      title: 'Spooky Photos'
+    }
+  },
   devtools: { enabled: true },
   modules: ["@nuxtjs/cloudinary"],
 
