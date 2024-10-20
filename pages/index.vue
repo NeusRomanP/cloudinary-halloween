@@ -35,7 +35,7 @@
         </button>
       </CldUploadWidget>
     </div>
-    <div v-if="imageUrl" class="image-container">
+    <div v-if="showImg" class="image-container">
       <ConverterOptions @transform-photo="(type, target) => transformPhoto(type, target)"/>
       <p v-if="loading" class="loading">Loading...</p>
       <p v-if="imgError" class="img-error">An error ocurred, try again...</p>
@@ -58,15 +58,21 @@
   const cloudName = config.public.cloudinaryCloudName;
 
   const myImages = ref([]);
+  const showImg = ref(false);
   const loading = ref(false);
   const imgError = ref(false);
   const imageUrl = ref('');
   const id = ref('');
   let image;
+  let lastTarget = '';
+  let lastType = '';
 
   onMounted(() => {
     myImages.value = nuxtStorage.localStorage.getData('images') || [];
     imageUrl.value = myImages.value[0]?.url ?? '';
+
+    showImg.value = imageUrl.value ?? false;
+
     id.value = myImages.value[0]?.id ?? '';
     image = document.getElementById('img');
   });
@@ -74,6 +80,7 @@
   function uploadSuccess(result) {
     imageUrl.value = result.info.secure_url;
     id.value = result.info.public_id;
+    showImg.value = true;
     image = document.getElementById('img');
     let imgs = nuxtStorage.localStorage.getData('images') || [];
     imgs.unshift({
@@ -94,8 +101,11 @@
 
   function transformPhoto(type, target) {
     image = document.getElementById('img');
-    image.style.opacity = .3;
-    loading.value = true;
+    
+    if (lastTarget !== target || lastType !== type){
+      image.style.opacity = .3;
+      loading.value = true;
+    }
 
     if (imgError.value) {
       loading.value = false;
@@ -134,16 +144,19 @@
 
     image.onload = () => {
       loading.value = false;
+      imgError.value = false;
       image.style.opacity = '1';
       ok = true;
     }
 
-    image.onerror = () => {
+    image.onerror = (e) => {
       loading.value = false;
       image.style.opacity = '1';
       ok = false;
       imgError.value = true;
     }
+    lastTarget = target;
+    lastType = type;
   }
 
   function openModal() {
