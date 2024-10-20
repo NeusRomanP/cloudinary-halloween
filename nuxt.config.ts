@@ -6,6 +6,9 @@ export default defineNuxtConfig({
       title: 'Spooky Photos'
     }
   },
+  build: {
+    transpile: ['nuxt-storage']
+  },
   devtools: { enabled: true },
   modules: ["@nuxtjs/cloudinary"],
 
