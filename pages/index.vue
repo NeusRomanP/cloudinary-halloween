@@ -37,7 +37,9 @@
       <img :src="imageUrl" alt="Imagen subida" id="img"/>
     </div>
   </div>
-  <UploadedImages @setImage="setImage" />
+  <<ClientOnly >
+    <UploadedImages @setImage="setImage" :images="myImages" />
+  </ClientOnly>
 </template>
 <script setup>
   import { ref } from "vue";
@@ -47,22 +49,27 @@
   const config = useRuntimeConfig();
   const cloudName = config.public.cloudinaryCloudName;
 
+  const myImages = ref([]);
+
   let imageUrl = ref("https://res.cloudinary.com/dhtztzsnk/image/upload/v1728840828/kfvuamjbsfnqdmbw5ge6.jpg");
   let id = ref("kfvuamjbsfnqdmbw5ge6");
   let image;
 
   onMounted(() => {
     image = document.getElementById('img');
+    myImages.value = nuxtStorage.localStorage.getData('images') || [];
   });
 
   function uploadSuccess(result) {
     imageUrl.value = result.info.secure_url;
     id.value = result.info.public_id;
     let imgs = nuxtStorage.localStorage.getData('images') || [];
-    imgs.push({
+    imgs.unshift({
       id: id.value,
       url: imageUrl.value
     });
+
+    myImages.value = imgs;
     nuxtStorage.localStorage.setData('images', imgs, 365 * 5, 'd');
   }
 
@@ -107,6 +114,19 @@
   function openModal() {
     document.querySelector('.modal-container').classList.remove('hidden');
   }
+
+  function loadImages() {
+    myImages.value = nuxtStorage.localStorage.getData('images') || [];
+  }
+
+  onMounted(() => {
+    loadImages();
+    window.addEventListener('storage', loadImages);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener('storage', loadImages);
+  });
   
 </script>
 <style scoped>

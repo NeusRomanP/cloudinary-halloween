@@ -3,13 +3,18 @@
     <div class="modal-container hidden">
       <div class="gallery-modal">
         <h2>Uploaded images</h2>
-        <div v-if="myImages.length" class="gallery">
-          <div v-for="(img, key) in myImages" :key="key" class="item" @click="$emit('setImage', img)">
-            <img :src="img.url">
-          </div> 
-        </div>
-        <div v-else class="gallery">
-          <p>You haven't uploaded any image yet!</p>
+        <div class="gallery-container">
+          <div class="gallery-scroll">
+            <div v-if="myImages.length" class="gallery">
+              <div v-for="(img, key) in images" :key="key" class="item" @click="$emit('setImage', img)">
+                <img :src="img.url">
+              </div>
+            </div>
+            <div v-else class="gallery">
+              <p>You haven't uploaded any image yet!</p>
+            </div>
+          </div>
+          
         </div>
         <button @click="closeModal">Close</button>
       </div> 
@@ -18,27 +23,17 @@
   </teleport>
 </template>
 <script setup>
-import { getData, setData } from 'nuxt-storage/local-storage';
 import { ref } from 'vue';
 
 const emit = defineEmits(['setImage']);
+const props = defineProps({
+  images: {
+    type: Array,
+    required: true,
+  },
+});
 
-const myImages = ref([]);
-
-let storage = getData('images');
-
-if (storage) {
-  loadImages();
-}
-
-function loadImages() {
-  storage.forEach(image => {
-      myImages.value.unshift({
-        url: image.url,
-        id: image.id
-      });
-  });
-}
+const myImages = ref(props.images ?? []);
 
 function closeModal() {
   document.querySelector('.modal-container').classList.add('hidden');
@@ -73,22 +68,46 @@ function closeModal() {
     box-sizing: border-box;
   }
 
+  .gallery-container {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .gallery-scroll {
+    max-height: 100%;
+    overflow: auto;
+    padding-right: 8px;
+  }
+
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, .5fr));
     gap: 16px;
-    flex: 1;
   }
 
   .gallery .item {
     width: 100%;
     aspect-ratio: 1;
     overflow: hidden;
+    cursor: pointer;
+    border-radius: 16px;
+  }
+
+  .gallery .item:hover {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    box-shadow: 0 0 8px white;
+  }
+
+  .gallery .item:hover img {
+    transform: scale(1.5);
   }
 
   .gallery .item img {
     width: 100%;
     object-fit: cover;
+    transition: all 1s;
   }
 
   .gallery p {
@@ -121,5 +140,21 @@ function closeModal() {
 
   .hidden {
     display: none;
+  }
+
+  /* Scrollbar */
+  .gallery-scroll::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .gallery-scroll::-webkit-scrollbar-track {
+    background: black;
+    border-radius: 10px;
+  }
+
+  .gallery-scroll::-webkit-scrollbar-thumb {
+    background-color: orange;
+    border-radius: 10px;
+    border: 2px solid black;
   }
 </style>
